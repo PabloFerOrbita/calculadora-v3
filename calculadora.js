@@ -1,4 +1,4 @@
-var calculadora = [[{ Id: 'eliminar', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "CE", Texto: "CE", Columnas: '6' }, { Id: 'resetear', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "C", Texto: "C", Columnas: '6' }],
+var calculadora = [[{ Id: 'eliminar', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "CE", Texto: "CE", Columnas: '4' }, { Id: 'resetear', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "C", Texto: "C", Columnas: '4' }, { Id: 'borrar', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "back", Texto: "", Columnas: '4' }],
 [{ Id: '7', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "7", Texto: "7", Columnas: '3' }, { Id: '8', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "8", Texto: "8", Columnas: '3' }, { Id: '9', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "9", Texto: "9", Columnas: '3' }, { Id: '/', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "/", Texto: "/", Columnas: '3' }],
 [{ Id: '4', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "4", Texto: "4", Columnas: '3' }, { Id: '5', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "5", Texto: "5", Columnas: '3' }, { Id: '6', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "6", Texto: "6", Columnas: '3' }, { Id: '-', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "-", Texto: "-", Columnas: '3' }],
 [{ Id: '1', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "1", Texto: "1", Columnas: '3' }, { Id: '2', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "2", Texto: "2", Columnas: '3' }, { Id: '3', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "3", Texto: "3", Columnas: '3' }, { Id: '+', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "+", Texto: "+", Columnas: '3' }],
@@ -15,8 +15,20 @@ calculadora.forEach(fila => {
         $(boton).append(`<button type="button" id="${columna.Id}" class="${columna.Clase} ${columna.Estilos}" value="${columna.Valor}">${columna.Texto}</button>`)
         $('#teclado').append(boton)
     })
-})
 
+})
+$('#borrar').append('<i class="bi bi-backspace"></i>');
+
+function cargarPagina() {
+    $('#resultado').text(numero);
+    $('#eliminar').on('click', eliminar);
+    $('#resetear').on('click', resetear);
+    $('#borrar').on('click', borrarUno);
+    $('.numero').on('click', setNumero)
+    $('.operador').on('click', manejarOperacion)
+
+
+}
 const sumar = (resultado, numero) => {
     return parseFloat(resultado) + parseFloat(numero);
 }
@@ -53,21 +65,14 @@ const calculo = (resultado, numero, operador) => {
 }
 
 
-function cargarPagina() {
-    $('#resultado').text(numero);
-    $('#eliminar').on('click', Eliminar);
-    $('#resetear').on('click', Resetear);
-    $('.numero').on('click', setNumero)
-    $('.operador').on('click', ManejarOperacion)
 
-}
 
 function setNumero(e) {
     if (numero === 'resul' || esIgual === true) {
         numero = 0;
     }
     if (resultado == 'inviable') {
-        ManejarInviable();
+        manejarInviable();
     } else if (esIgual === true) {
         esIgual = false;
         $('#operacion').text('');
@@ -79,9 +84,28 @@ function setNumero(e) {
     $('#resultado').text(numero)
 }
 
-function Eliminar() {
+function borrarUno() {
+    if (resultado == 'inviable') {
+        resetear();
+    } else if (esIgual == true) {
+        $('#operacion').text('');
+        operacdor = 0;
+    }
+    else if (esIgual !== true && !$('#operacion').text().includes('=')) {
+        numero = numero.toString();
+        if (numero.length > 1 && numero !== 'resul') {
+            numero = numero.substr(0, numero.length - 1);
+            numero = parseInt(numero);
+        } else {
+            numero = 0
+        }
+        $('#resultado').text(numero)
+    }
+}
+
+function eliminar() {
     if (resultado === 'inviable') {
-        ManejarInviable();
+        manejarInviable();
     } else {
         numero = 0;
         $('#resultado').text(numero);
@@ -93,13 +117,13 @@ function Eliminar() {
 
 }
 
-function Resetear() {
+function resetear() {
     numero = 0;
-    ManejarInviable();
+    manejarInviable();
 
 }
 
-function ManejarInviable() {
+function manejarInviable() {
     resultado = 0;
     tipoOperador = 0;
     esIgual = false;
@@ -110,11 +134,11 @@ function ManejarInviable() {
 
     })
 }
-async function ManejarOperacion(e) {
+async function manejarOperacion(e) {
 
     if ($(e.target).val() === '=') {
         if (resultado === 'inviable') {
-            ManejarInviable();
+            manejarInviable();
         } else {
             if (numero === 'resul') {
                 numero = resultado;
