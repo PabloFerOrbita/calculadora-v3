@@ -12,3 +12,38 @@ calculadora.forEach(fila => {
         $('#teclado').append(boton)
     })
 })
+
+const sumar = (resultado, numero) => {
+    return parseFloat(resultado) + parseFloat(numero);
+}
+
+const multiplicar = (resultado, numero) => {
+    return parseFloat(resultado) * parseFloat(numero);
+}
+
+const dividir = (resultado, numero) => {
+    if (numero != 0) {
+        return parseFloat(resultado) / parseFloat(numero);
+    } else {
+        return 'inviable';
+    }
+}
+
+const restar = (resultado, numero) => {
+    return parseFloat(resultado) - parseFloat(numero);
+}
+
+const calculo = (resultado, numero, operador) => {
+    switch(operador){
+        case '-':
+            return restar(resultado, numero);
+        case '+':
+            return sumar(resultado, numero);
+        case '*':
+            return multiplicar(resultado, numero);
+        case '/':
+            return dividir(resultado, numero);
+        default:
+            return parseFloat(numero);
+    }
+}
