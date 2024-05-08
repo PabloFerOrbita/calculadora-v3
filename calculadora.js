@@ -6,6 +6,8 @@ var calculadora = [[{ Id: 'porciento', Clase: 'porciento', Estilos: 'btn btn-lig
 [{ Id: '0', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "0", Texto: "0", Columnas: '6' }, { Id: '=', Clase: 'operador', Estilos: 'btn btn-primary text-white p-3 w-100', Valor: "=", Texto: "=", Columnas: '6' }]];
 var tipoOperador = 0;
 var resultado = 0;
+var resultadoTexto = '';
+var numeroTexto = '';
 var numero = 0;
 var esIgual = false;
 
@@ -34,15 +36,26 @@ function cargarPagina() {
 
 function potenciaCuadrado() {
     if (numero == 'resul' || numero == 'potencia') {
+        if (tipoOperador == 0 || esIgual) {
+            resultadoTexto = `sqr(${resultadoTexto})`;
+        } else {
+            numeroTexto = `sqr(${numero == 'potencia' ? numeroTexto : $('#resultado').text()})`;
+        }
         numero = parseFloat($('#resultado').text());
+    } else if (esIgual) {
+        resultadoTexto = `sqr(${resultado})`;
+    } else if (tipoOperador == 0) {
+        resultadoTexto = `sqr(${numero})`;
+    } else {
+        numeroTexto = `sqr(${numero})`
     }
-    if (tipoOperador == 0) {
-        resultado = Math.pow(numero, 2);
-        $('#operacion').text(`sqr(${resultado})`);
+    if (tipoOperador == 0 || esIgual) {
+        resultado = Math.pow((esIgual ? resultado : numero), 2);
+        $('#operacion').text(`${resultadoTexto}`);
         $('#resultado').text(`${resultado}`);
         numero = 'potencia';
     } else {
-        $('#operacion').text(`${resultado} + sqr(${numero})`);
+        $('#operacion').text(`${resultadoTexto} + ${numeroTexto}`);
         numero = Math.pow(numero, 2);
         $('#resultado').text(`${numero}`);
         numero = 'potencia';
@@ -50,7 +63,7 @@ function potenciaCuadrado() {
 }
 
 function porcentaje() {
-    if (esIgual == true) {
+    if (esIgual) {
         resultado = resultado / 100 * resultado;
         $('#operacion').text(`${resultado}`);
         $('#resultado').text(`${resultado}`)
@@ -110,9 +123,12 @@ const calculo = (resultado, numero, operador) => {
 
 
 function setNumero(e) {
+    numeroTexto = '';
     if (numero === 'resul' || esIgual === true || numero === 'porcentaje' || numero === 'potencia') {
-        if (numero == 'porcentaje' || numero === 'potencia') {
+        if (numero == 'porcentaje') {
             $('#operacion').text(`${resultado} ${tipoOperador}`)
+        } else if (numero == 'potencia') {
+            $('#operacion').text(`${resultadoTexto} `)
         }
         numero = 0;
 
@@ -172,6 +188,8 @@ function resetear() {
 function manejarInviable() {
     resultado = 0;
     tipoOperador = 0;
+    resultadoTexto = '';
+    numeroTexto = '';
     esIgual = false;
     $('#operacion').text('');
     $('#resultado').text(numero)
@@ -182,26 +200,43 @@ function manejarInviable() {
 }
 function manejarOperacion(e) {
 
+
     if ($(e.target).val() === '=') {
         if (resultado === 'inviable') {
             manejarInviable();
         } else {
             if (numero === 'resul') {
                 numero = resultado;
+
             } else if (numero === 'porcentaje' || numero === 'potencia') {
                 numero = parseFloat($('#resultado').text());
             }
+            if (esIgual) {
+                resultadoTexto = resultado;
+                numeroTexto = numero
+            } else {
+                if (numeroTexto == '') {
+                    numeroTexto = numero
+                }
+                if (resultadoTexto == '') {
+                    resultadoTexto = resultado;
+                }
 
+            };
             if (tipoOperador !== 0) {
-                $('#operacion').text(resultado + ' ' + tipoOperador + ' ' + numero + '=');
+                $('#operacion').text(resultadoTexto + ' ' + tipoOperador + ' ' + numeroTexto + '=');
                 esIgual = true;
             } else {
-                $('#operacion').text(numero + '=');
+                $('#operacion').text(resultadoTexto + '=');
             }
+
             operar();
         }
 
     } else {
+        if (tipoOperador == 0 && numero != 'potencia') {
+            resultadoTexto = $('#resultado').text();
+        }
         if (esIgual == true) {
             numero = 'resul';
         } else if (numero != 'resul') {
@@ -210,12 +245,15 @@ function manejarOperacion(e) {
             }
             operar();
         }
+        if (tipoOperador != 0) {
+            resultadoTexto = resultado;
+        }
         esIgual = false;
 
 
         tipoOperador = $(e.target).val();
         if (resultado !== 'inviable') {
-            $('#operacion').text(resultado + ' ' + tipoOperador);
+            $('#operacion').text(resultadoTexto + ' ' + tipoOperador);
         }
     }
 }
