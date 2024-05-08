@@ -1,9 +1,9 @@
 var calculadora = [[{ Id: 'porciento', Clase: 'porciento', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "%", Texto: "%", Columnas: "3" }, { Id: 'eliminar', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "CE", Texto: "CE", Columnas: '3' }, { Id: 'resetear', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "C", Texto: "C", Columnas: '3' }, { Id: 'borrar', Clase: 'borrador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "back", Texto: "", Columnas: '3' }],
-[{ Id: '7', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "7", Texto: "7", Columnas: '3' }, { Id: '8', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "8", Texto: "8", Columnas: '3' }, { Id: '9', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "9", Texto: "9", Columnas: '3' }, { Id: '/', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "/", Texto: "/", Columnas: '3' }],
+[{ Id: 'potencia', Clase: 'potencia', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: 'ptn', Texto: 'x^2', Columnas: '6' }, { Id: '/', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "/", Texto: "/", Columnas: '6' }],
+[{ Id: '7', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "7", Texto: "7", Columnas: '3' }, { Id: '8', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "8", Texto: "8", Columnas: '3' }, { Id: '9', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "9", Texto: "9", Columnas: '3' }, { Id: '*', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "*", Texto: "*", Columnas: '3' }],
 [{ Id: '4', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "4", Texto: "4", Columnas: '3' }, { Id: '5', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "5", Texto: "5", Columnas: '3' }, { Id: '6', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "6", Texto: "6", Columnas: '3' }, { Id: '-', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "-", Texto: "-", Columnas: '3' }],
 [{ Id: '1', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "1", Texto: "1", Columnas: '3' }, { Id: '2', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "2", Texto: "2", Columnas: '3' }, { Id: '3', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "3", Texto: "3", Columnas: '3' }, { Id: '+', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "+", Texto: "+", Columnas: '3' }],
-[{ Id: '0', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "0", Texto: "0", Columnas: '9' }, { Id: '*', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "*", Texto: "*", Columnas: '3' }],
-[{ Id: '=', Clase: 'operador', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "=", Texto: "=", Columnas: '12' }]];
+[{ Id: '0', Clase: 'numero', Estilos: 'btn btn-light btn-outline-secondary p-3 w-100', Valor: "0", Texto: "0", Columnas: '6' }, { Id: '=', Clase: 'operador', Estilos: 'btn btn-primary text-white p-3 w-100', Valor: "=", Texto: "=", Columnas: '6' }]];
 var tipoOperador = 0;
 var resultado = 0;
 var numero = 0;
@@ -21,14 +21,32 @@ $('#borrar').append('<i class="bi bi-backspace"></i>');
 
 function cargarPagina() {
     $('#resultado').text(numero);
-    $('#eliminar').on('click', eliminar);
-    $('#resetear').on('click', resetear);
-    $('#borrar').on('click', borrarUno);
-    $('#porciento').on('click', porcentaje);
+    $('#eliminar').click(eliminar);
+    $('#resetear').click(resetear);
+    $('#borrar').click(borrarUno);
+    $('#porciento').click(porcentaje);
+    $('#potencia').click(potenciaCuadrado);
     $('.numero').on('click', setNumero);
     $('.operador').on('click', manejarOperacion);
 
 
+}
+
+function potenciaCuadrado() {
+    if (numero == 'resul' || numero == 'potencia') {
+        numero = parseFloat($('#resultado').text());
+    }
+    if (tipoOperador == 0) {
+        resultado = Math.pow(numero, 2);
+        $('#operacion').text(`sqr(${resultado})`);
+        $('#resultado').text(`${resultado}`);
+        numero = 'potencia';
+    } else {
+        $('#operacion').text(`${resultado} + sqr(${numero})`);
+        numero = Math.pow(numero, 2);
+        $('#resultado').text(`${numero}`);
+        numero = 'potencia';
+    }
 }
 
 function porcentaje() {
@@ -92,8 +110,8 @@ const calculo = (resultado, numero, operador) => {
 
 
 function setNumero(e) {
-    if (numero === 'resul' || esIgual === true || numero === 'porcentaje') {
-        if (numero == 'porcentaje') {
+    if (numero === 'resul' || esIgual === true || numero === 'porcentaje' || numero === 'potencia') {
+        if (numero == 'porcentaje' || numero === 'potencia') {
             $('#operacion').text(`${resultado} ${tipoOperador}`)
         }
         numero = 0;
@@ -170,7 +188,7 @@ function manejarOperacion(e) {
         } else {
             if (numero === 'resul') {
                 numero = resultado;
-            } else if (numero === 'porcentaje') {
+            } else if (numero === 'porcentaje' || numero === 'potencia') {
                 numero = parseFloat($('#resultado').text());
             }
 
@@ -187,7 +205,7 @@ function manejarOperacion(e) {
         if (esIgual == true) {
             numero = 'resul';
         } else if (numero != 'resul') {
-            if (numero === 'porcentaje') {
+            if (numero === 'porcentaje' || numero === 'potencia') {
                 numero = parseFloat($('#resultado').text());
             }
             operar();
